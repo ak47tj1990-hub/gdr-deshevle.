@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1769e0">
+<title>ГДЕ ДЕШЕВЛЕ — сравнение цен</title>
+<style>
+:root{--blue:#1769e0;--ink:#172033;--muted:#697386;--line:#e6eaf0;--bg:#f5f7fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:#fff;border-bottom:1px solid var(--line);padding:18px 16px;position:sticky;top:0;z-index:2}
+.wrap{max-width:760px;margin:auto}.brand{font-weight:800;font-size:21px;letter-spacing:-.5px}.brand span{color:var(--blue)}
+main{max-width:760px;margin:auto;padding:22px 16px 48px}.hero{background:linear-gradient(135deg,#145bd0,#3889f5);color:white;border-radius:22px;padding:25px 20px;margin-bottom:20px}.hero h1{font-size:28px;line-height:1.12;margin:0 0 9px}.hero p{margin:0;opacity:.92;line-height:1.45}
+.searchbox{display:flex;gap:8px;margin-top:18px}.searchbox input{min-width:0;flex:1;border:0;border-radius:12px;padding:14px;font-size:16px}.searchbox button,.primary{border:0;background:#102f68;color:#fff;border-radius:12px;padding:0 17px;font-weight:700;font-size:15px}
+.notice{background:#fff8e6;border:1px solid #f4dfa7;color:#765719;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.4;margin:16px 0 20px}
+h2{font-size:19px;margin:22px 0 12px}.chips{display:flex;gap:8px;overflow:auto;padding-bottom:5px}.chip{white-space:nowrap;border:1px solid var(--line);background:white;border-radius:99px;padding:9px 13px;color:var(--ink)}.chip.active{background:#e8f1ff;border-color:#9fc3ff;color:#1256b8;font-weight:700}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin:18px 0 10px}.toolbar select{border:1px solid var(--line);background:white;border-radius:9px;padding:8px;color:var(--ink)}
+.card{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;display:grid;grid-template-columns:64px 1fr;gap:13px}.thumb{width:64px;height:64px;border-radius:13px;background:#edf3fc;display:grid;place-items:center;font-size:31px}.name{font-weight:750;line-height:1.3}.meta{color:var(--muted);font-size:13px;margin-top:5px}.price{font-size:20px;font-weight:800;margin-top:10px}.offers{grid-column:1/-1;border-top:1px solid var(--line);padding-top:10px;display:flex;justify-content:space-between;gap:10px;font-size:14px}.store{color:var(--muted)}.best{color:#137a43;font-weight:700}.empty{background:white;border:1px dashed #cbd3df;border-radius:14px;padding:22px;text-align:center;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<header><div class="wrap brand">ГДЕ <span>ДЕШЕВЛЕ</span></div></header>
+<main>
+<section class="hero">
+<h1>Найди товар по выгодной цене</h1>
+<p>Идея сервиса: сравнивать предложения разных магазинов в одном месте.</p>
+<div class="searchbox"><input id="search" type="search" placeholder="Например, наушники или чай"><button id="searchBtn">Найти</button></div>
+</section>
+<div class="notice"><b>Демонстрационная версия.</b> Цены и магазины ниже — примеры для проверки интерфейса, не реальные предложения. Данные маркетплейсов пока не подключены.</div>
+<h2>Категории</h2>
+<div class="chips" id="categories">
+<button class="chip active" data-cat="Все">Все</button>
+<button class="chip" data-cat="Электроника">Электроника</button>
+<button class="chip" data-cat="Дом">Дом</button>
+<button class="chip" data-cat="Продукты">Продукты</button>
+<button class="chip" data-cat="Красота">Красота</button>
+</div>
+<div class="toolbar"><span id="count">Примеры товаров</span><select id="sort"><option value="asc">Сначала дешевле</option><option value="desc">Сначала дороже</option></select></div>
+<div id="results"></div>
+</main>
+<footer>ГДЕ ДЕШЕВЛЕ · Первая демонстрационная версия</footer>
+<script>
+const products=[
+{id:1,name:"Беспроводные наушники",cat:"Электроника",emoji:"🎧",desc:"Пример товара · модель A",offers:[["Магазин А",2490],["Магазин Б",2790],["Магазин В",2590]]},
+{id:2,name:"Электрический чайник",cat:"Дом",emoji:"🫖",desc:"Пример товара · 1,7 л",offers:[["Магазин А",1890],["Магазин Б",2150]]},
+{id:3,name:"Кофе молотый",cat:"Продукты",emoji:"☕",desc:"Пример товара · упаковка 250 г",offers:[["Магазин В",430],["Магазин Б",399],["Магазин А",450]]},
+{id:4,name:"Увлажняющий крем",cat:"Красота",emoji:"🧴",desc:"Пример товара · 50 мл",offers:[["Магазин А",520],["Магазин В",490]]},
+{id:5,name:"Портативная колонка",cat:"Электроника",emoji:"🔊",desc:"Пример товара · модель B",offers:[["Магазин Б",3190],["Магазин В",2990]]}
+];
+let category="Все";
+const results=document.getElementById("results"),search=document.getElementById("search");
+function render(){
+ const q=search.value.trim().toLowerCase(),sort=document.getElementById("sort").value;
+ let list=products.filter(p=>(category==="Все"||p.cat===category)&&(p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q)));
+ list=list.map(p=>({...p,offers:[...p.offers].sort((a,b)=>a[1]-b[1])})).sort((a,b)=>sort==="asc"?a.offers[0][1]-b.offers[0][1]:b.offers[0][1]-a.offers[0][1]);
+ document.getElementById("count").textContent="Найдено примеров: "+list.length;
+ results.innerHTML=list.length?list.map(p=>`<article class="card"><div class="thumb">${p.emoji}</div><div><div class="name">${p.name}</div><div class="meta">${p.desc} · ${p.cat}</div><div class="price">от ${p.offers[0][1].toLocaleString("ru-RU")} ₽</div></div>${p.offers.map((o,i)=>`<div class="offers"><span class="${i===0?'best':'store'}">${o[0]} ${i===0?'· дешевле':''}</span><b>${o[1].toLocaleString("ru-RU")} ₽</b></div>`).join("")}</article>`).join(""):'<div class="empty">Ничего не найдено. Попробуй изменить запрос.</div>';
+}
+document.getElementById("searchBtn").addEventListener("click",render);
+search.addEventListener("input",render);
+document.getElementById("sort").addEventListener("change",render);
+document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{category=b.dataset.cat;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("active",x===b));render()}));
+render();
+</script>
+</body>
+</html>
